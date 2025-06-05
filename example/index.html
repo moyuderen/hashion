@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>file-hasher</title>
+    <link rel="stylesheet" href="//unpkg.com/element-plus/dist/index.css" />
+    <script src="//unpkg.com/vue@3"></script>
+    <script src="//unpkg.com/element-plus"></script>
+  </head>
+  <body>
+    <div id="app">
+      <input type="file" @change="handleSelected" />
+      <el-button type="primary" size="default" @click="handleAbort">Abort</el-button>
+    </div>
+    <script type="module" src="./main.js"></script>
+  </body>
+</html>
