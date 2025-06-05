@@ -10,8 +10,8 @@ export class Hash {
   computedHash({ file, chunkSize }: HashParameters, callback: (data: HashCallbackData) => void) {
     let abortComputedHash: any
 
-    const promise = new Promise(async (resolve, reject) => {
-      const { abort } = await Promise.resolve(
+    const promise = new Promise((resolve, reject) => {
+      Promise.resolve(
         this.hashCarrier.computeHash(
           {
             file,
@@ -27,8 +27,9 @@ export class Hash {
             callback && callback({ progress })
           }
         )
-      )
-      abortComputedHash = { abort, reject }
+      ).then(({ abort }) => {
+        abortComputedHash = { abort, reject }
+      })
     })
 
     return {
