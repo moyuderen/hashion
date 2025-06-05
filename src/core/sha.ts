@@ -9,10 +9,10 @@ export type ShaOptions = {
 export class Sha {
   static pluginName = 'hash-plugin'
   static name = 'SHA'
-  algorithm: string
+  algorithm: ShaAlgorithm
 
   constructor(options: ShaOptions) {
-    this.algorithm = options.algorithm || 'SHA-256'
+    this.algorithm = options?.algorithm || 'SHA-256'
   }
 
   computeHash(data: HashParameters, callback: HashCallback) {
@@ -23,7 +23,7 @@ export class Sha {
     const totalChunks = Math.ceil(fileSize / chunkSize)
     let currentChunk = 0
     let ended = false
-    
+
     let offset = 0
 
     // 分配初始缓冲区（避免动态扩展）

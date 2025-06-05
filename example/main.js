@@ -1,4 +1,4 @@
-import { Hash } from '../src'
+import { Hashion } from '../src'
 import { Sha } from '../src/core/sha'
 import { Spark } from '../src/core/spark'
 import { SparkWorker } from '../src/core/sparkWorker'
@@ -8,8 +8,8 @@ const { onMounted } = Vue
 const app = Vue.createApp({
   setup() {
     const chunkSize = 5 * 1024 * 1024
-    const hasher = new Hash(Spark)
-    // const hasher = new Hash(Sha)
+    // const hasher = new Hash(Spark)
+    const hasher = new Hashion(Sha)
     // const hasher = new Hash(SparkWorker)
 
     let readCancel
