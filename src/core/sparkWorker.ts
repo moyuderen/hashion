@@ -15,8 +15,10 @@ export class SparkWorker {
 
       const { file, chunkSize, type } = e.data
       const fileReader = new FileReader()
+      let ended = false
 
       if(type === 'CANCELED') {
+        if(ended) return
         fileReader.abort()
         self.postMessage({ error: new Error('Hash calculation cancelled !'), progress: 0 })
       }
@@ -43,7 +45,7 @@ export class SparkWorker {
           loadNext()
           self.postMessage({ error: null, progress: (currentChunk / totalChunks) * 100 })
         } else {
-    
+          ended = true
           const result = {
             hash: spark.end(),
             time: Date.now() - startTime,

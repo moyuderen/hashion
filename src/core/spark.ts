@@ -12,6 +12,8 @@ export class Spark {
     const { file, chunkSize } = data
     let spark: any
     let SparkMD5: any
+    let ended = false
+
     try {
       // @ts-expect-error
       SparkMD5 = (await import('spark-md5')).default
@@ -30,6 +32,7 @@ export class Spark {
     const controller = new AbortController()
     const signal = controller.signal
     signal.addEventListener('abort', () => {
+      if (ended) return
       fileReader.abort() // 中断 FileReader
       callback(new Error('Hash calculation cancelled'), { progress: 0 })
     })
@@ -43,6 +46,7 @@ export class Spark {
           progress: (currentChunk / totalChunks) * 100
         })
       } else {
+        ended = true
         callback(null, {
           hash: spark.end(),
           time: Date.now() - startTime,

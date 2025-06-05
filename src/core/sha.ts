@@ -19,9 +19,11 @@ export class Sha {
     const { file, chunkSize } = data
     const fileSize = file.size
     const reader = new FileReader()
-    let currentChunk = 0
     const startTime = Date.now()
     const totalChunks = Math.ceil(fileSize / chunkSize)
+    let currentChunk = 0
+    let ended = false
+    
     let offset = 0
 
     // 分配初始缓冲区（避免动态扩展）
@@ -32,6 +34,7 @@ export class Sha {
     const controller = new AbortController()
     const signal = controller.signal
     signal.addEventListener('abort', () => {
+      if (ended) return
       reader.abort() // 中断 FileReader
       callback(new Error('Hash calculation cancelled'), { progress: 0 })
     })
@@ -64,6 +67,8 @@ export class Sha {
           const hash = Array.from(new Uint8Array(hashBuffer))
             .map((b) => b.toString(16).padStart(2, '0'))
             .join('')
+
+          ended = true
           callback(null, {
             hash,
             time: Date.now() - startTime,
