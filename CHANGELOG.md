@@ -1,4 +1,4 @@
-# hashison
+# Hashion
 
 ## 0.0.2
 
