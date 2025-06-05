@@ -1,6 +1,6 @@
 import type { HashParameters, HashCallbackData } from '../types/hash'
 
-export class Hash {
+export class Hashion {
   hashCarrier: any
 
   constructor(plugin: any, options?: Record<string, any>) {
