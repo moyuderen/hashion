@@ -7,10 +7,6 @@ settings:
 importers:
 
   .:
-    dependencies:
-      spark-md5:
-        specifier: ^3.0.2
-        version: 3.0.2
     devDependencies:
       '@changesets/cli':
         specifier: ^2.29.4
@@ -18,6 +14,9 @@ importers:
       '@types/node':
         specifier: ^22.15.29
         version: 22.15.29
+      spark-md5:
+        specifier: ^3.0.2
+        version: 3.0.2
       typescript:
         specifier: ~5.8.3
         version: 5.8.3
