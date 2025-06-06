@@ -2,8 +2,10 @@ import type { HashParameters, HashCallbackData } from '../types/hash'
 
 export class Hashion {
   hashCarrier: any
+  hashionName: string
 
   constructor(plugin: any, options?: Record<string, any>) {
+    this.hashionName = plugin.name
     this.hashCarrier = new plugin(options)
   }
 

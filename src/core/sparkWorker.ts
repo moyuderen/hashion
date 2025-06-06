@@ -6,10 +6,12 @@ let worker: Worker
 
 export class SparkWorker {
   static pluginName = 'hash-plugin'
-  static name = 'webworker-hash'
-
+  static name = 'sparkMd5Webworker'
+  name: string
   workerCode: string
+
   constructor() {
+    this.name = 'sparkMd5Webworker'
     this.workerCode = `self.onmessage = (e) => {
       ${sparkMD5Code()}
 

@@ -7,6 +7,11 @@ const slice =
 export class Spark {
   static pluginName = 'hash-plugin'
   static name = 'spark-md5'
+  name: string
+
+  constructor() {
+    this.name = 'spark-md5'
+  }
 
   async computeHash(data: HashParameters, callback: HashCallback) {
     const { file, chunkSize } = data

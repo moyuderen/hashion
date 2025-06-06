@@ -1,5 +1,18 @@
 # Hashion
 
+## 0.0.7
+
+### Patch Changes
+
+- export hashionName
+
+## 0.0.6
+
+### Patch Changes
+
+- 97f36c0: test spark-md5 dependence
+- sparmk-md5 peerDependence
+
 ## 0.0.6-alpha.0
 
 ### Patch Changes

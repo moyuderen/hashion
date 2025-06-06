@@ -10,9 +10,11 @@ export class Sha {
   static pluginName = 'hash-plugin'
   static name = 'SHA'
   algorithm: ShaAlgorithm
+  name: string
 
   constructor(options: ShaOptions) {
     this.algorithm = options?.algorithm || 'SHA-256'
+    this.name = 'SHA'
   }
 
   computeHash(data: HashParameters, callback: HashCallback) {
