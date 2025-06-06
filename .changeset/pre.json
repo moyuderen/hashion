@@ -1,0 +1,10 @@
+{
+  "mode": "pre",
+  "tag": "alpha",
+  "initialVersions": {
+    "hashion": "0.0.5"
+  },
+  "changesets": [
+    "eighty-boxes-marry"
+  ]
+}

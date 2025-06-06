@@ -8,8 +8,8 @@ const { onMounted } = Vue
 const app = Vue.createApp({
   setup() {
     const chunkSize = 5 * 1024 * 1024
-    // const hasher = new Hash(Spark)
-    const hasher = new Hashion(Sha)
+    const hasher = new Hashion(Spark)
+    // const hasher = new Hashion(Sha)
     // const hasher = new Hash(SparkWorker)
 
     let readCancel

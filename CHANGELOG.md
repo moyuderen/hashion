@@ -1,5 +1,17 @@
 # Hashion
 
+## 0.0.6-alpha.0
+
+### Patch Changes
+
+- test spark-md5 dependence
+
+## 0.0.5
+
+### Patch Changes
+
+- spark-md5: peer->dev
+
 ## 0.0.4
 
 ### Patch Changes

@@ -13,15 +13,15 @@ export class Spark {
     let spark: any
     let SparkMD5: any
     let ended = false
-
     try {
-      // @ts-expect-error
-      SparkMD5 = (await import('spark-md5')).default
+      const moduleName = 'spark-md5'
+      const mod = await import(/* @vite-ignore */ moduleName)
+      console.log(mod)
+      SparkMD5 = mod.default ?? mod
     } catch {
       const errorMessage = `SparkMd5Plugin: Please run > npm install spark-md5, https://www.npmjs.com/package/spark-md5`
       console.error(errorMessage)
       callback(new Error(errorMessage), { progress: 0 })
-      return
     }
     spark = new SparkMD5.ArrayBuffer()
     const fileReader = new FileReader()
