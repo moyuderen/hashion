@@ -7,7 +7,9 @@
     "file",
     "hash",
     "spark-md5",
+    "sha-1",
     "sha-256",
+    "sha-512",
     "web worker"
   ],
   "private": false,
@@ -16,9 +18,9 @@
   },
   "license": "MIT",
   "author": "moyuderen",
-  "homepage": "",
+  "homepage": "https://github.com/moyuderen/hashion",
   "repository": {
-    "url": ""
+    "url": "https://github.com/moyuderen/hashion"
   },
   "type": "module",
   "types": "./dist/index.d.ts",
