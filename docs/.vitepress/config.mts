@@ -2,6 +2,7 @@ import { defineConfig } from 'vitepress'
 
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
+  base: '/hashion/',
   title: 'Hashion',
   description: '计算文件hash,',
   themeConfig: {
