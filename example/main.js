@@ -6,9 +6,9 @@ import { SparkWorker } from '../src/core/sparkWorker'
 const app = Vue.createApp({
   setup() {
     const chunkSize = 5 * 1024 * 1024
-    const hasher = new Hashion(Spark)
+    // const hasher = new Hashion(Spark)
     // const hasher = new Hashion(Sha)
-    // const hasher = new Hashion(SparkWorker)
+    const hasher = new Hashion(SparkWorker)
 
     let readCancel
 
