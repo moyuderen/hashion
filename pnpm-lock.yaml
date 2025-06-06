@@ -6,7 +6,11 @@ settings:
 
 importers:
 
-  .: {}
+  .:
+    devDependencies:
+      '@changesets/cli':
+        specifier: ^2.29.4
+        version: 2.29.4
 
   docs:
     devDependencies:
@@ -20,9 +24,6 @@ importers:
         specifier: ^3.0.2
         version: 3.0.2
     devDependencies:
-      '@changesets/cli':
-        specifier: ^2.29.4
-        version: 2.29.4
       '@types/node':
         specifier: ^22.15.29
         version: 22.15.29

@@ -56,7 +56,6 @@
     "spark-md5": "^3.0.2"
   },
   "devDependencies": {
-    "@changesets/cli": "^2.29.4",
     "@types/node": "^22.15.29",
     "@types/spark-md5": "^3.0.5",
     "typescript": "~5.8.3",
