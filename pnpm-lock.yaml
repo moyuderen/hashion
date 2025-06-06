@@ -7,6 +7,10 @@ settings:
 importers:
 
   .:
+    dependencies:
+      spark-md5:
+        specifier: ^3.0.2
+        version: 3.0.2
     devDependencies:
       '@changesets/cli':
         specifier: ^2.29.4
@@ -14,6 +18,9 @@ importers:
       '@types/node':
         specifier: ^22.15.29
         version: 22.15.29
+      '@types/spark-md5':
+        specifier: ^3.0.5
+        version: 3.0.5
       typescript:
         specifier: ~5.8.3
         version: 5.8.3
@@ -428,6 +435,9 @@ packages:
 
   '@types/node@22.15.29':
     resolution: {integrity: sha512-LNdjOkUDlU1RZb8e1kOIUpN1qQUlzGkEtbVNo53vbrwDg5om6oduhm4SiUaPW5ASTXhAiP0jInWG8Qx9fVlOeQ==}
+
+  '@types/spark-md5@3.0.5':
+    resolution: {integrity: sha512-lWf05dnD42DLVKQJZrDHtWFidcLrHuip01CtnC2/S6AMhX4t9ZlEUj4iuRlAnts0PQk7KESOqKxeGE/b6sIPGg==}
 
   '@volar/language-core@2.4.14':
     resolution: {integrity: sha512-X6beusV0DvuVseaOEy7GoagS4rYHgDHnTrdOj5jeUb49fW5ceQyP9Ej5rBhqgz2wJggl+2fDbbojq1XKaxDi6w==}
@@ -930,6 +940,9 @@ packages:
   source-map@0.6.1:
     resolution: {integrity: sha512-UjgapumWlbMhkBgzT7Ykc5YXUT46F0iKu8SGXq0bcwP5dz/h0Plj6enJqjz1Zbq2l5WaqYnrVbwWOWMyF3F47g==}
     engines: {node: '>=0.10.0'}
+
+  spark-md5@3.0.2:
+    resolution: {integrity: sha512-wcFzz9cDfbuqe0FZzfi2or1sgyIrsDwmPwfZC4hiNidPdPINjeUwNfv5kldczoEAcjl9Y1L3SM7Uz2PUEQzxQw==}
 
   spawndamnit@3.0.1:
     resolution: {integrity: sha512-MmnduQUuHCoFckZoWnXsTg7JaiLBJrKFj9UI2MbRPGaJeVpsLcVBu6P/IGZovziM/YBsellCmsprgNA+w0CzVg==}
@@ -1475,6 +1488,8 @@ snapshots:
     dependencies:
       undici-types: 6.21.0
 
+  '@types/spark-md5@3.0.5': {}
+
   '@volar/language-core@2.4.14':
     dependencies:
       '@volar/source-map': 2.4.14
@@ -1968,6 +1983,8 @@ snapshots:
   source-map-js@1.2.1: {}
 
   source-map@0.6.1: {}
+
+  spark-md5@3.0.2: {}
 
   spawndamnit@3.0.1:
     dependencies:

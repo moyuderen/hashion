@@ -1,4 +1,4 @@
-// import SparkMD5 from 'spark-md5'
+import SparkMD5 from 'spark-md5'
 import type { HashCallback, HashParameters } from '../types/hash'
 
 const slice =
@@ -10,20 +10,8 @@ export class Spark {
 
   async computeHash(data: HashParameters, callback: HashCallback) {
     const { file, chunkSize } = data
-    let spark: any
-    let SparkMD5: any
     let ended = false
-    try {
-      const moduleName = 'spark-md5'
-      const mod = await import(/* @vite-ignore */ moduleName)
-      console.log(mod)
-      SparkMD5 = mod.default ?? mod
-    } catch {
-      const errorMessage = `SparkMd5Plugin: Please run > npm install spark-md5, https://www.npmjs.com/package/spark-md5`
-      console.error(errorMessage)
-      callback(new Error(errorMessage), { progress: 0 })
-    }
-    spark = new SparkMD5.ArrayBuffer()
+    const spark = new SparkMD5.ArrayBuffer()
     const fileReader = new FileReader()
     const totalChunks = Math.ceil(file.size / chunkSize)
     const startTime = Date.now()

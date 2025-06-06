@@ -27,8 +27,8 @@ export class Hashion {
             callback && callback({ progress })
           }
         )
-      ).then(({ abort }) => {
-        abortComputedHash = { abort, reject }
+      ).then((hash) => {
+        abortComputedHash = { abort: hash?.abort, reject }
       })
     })
 
@@ -36,7 +36,7 @@ export class Hashion {
       promise,
       abort: () => {
         if (!abortComputedHash) return
-        abortComputedHash.abort()
+        if (abortComputedHash.abort) abortComputedHash.abort()
         abortComputedHash.reject(new Error('Canceled promise to rejected'))
       }
     }
