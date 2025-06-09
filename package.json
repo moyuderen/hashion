@@ -16,7 +16,7 @@
     "change:stable": "pnpm changeset pre exit",
     "change": "pnpm changeset",
     "change-version": "pnpm changeset version",
-    "push-npm": "pnpm i && pnpm build && pnpm publish"
+    "push-npm": "pnpm i && pnpm build && pnpm -F hashion publish"
   },
   "keywords": [],
   "author": "",

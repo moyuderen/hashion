@@ -4,7 +4,7 @@ import { defineConfig } from 'vitepress'
 export default defineConfig({
   base: '/hashion/',
   title: 'Hashion',
-  description: '计算文件hash,',
+  description: '计算文件hash',
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
     nav: [{ text: 'Home', link: '/' }],
