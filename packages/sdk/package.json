@@ -1,16 +1,24 @@
 {
   "name": "hashion",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "计算文件hash",
   "keywords": [
     "web",
+    "browser",
+    "client",
     "file",
     "hash",
     "spark-md5",
     "sha-1",
     "sha-256",
     "sha-512",
-    "web worker"
+    "Web Worker",
+    "inline Web Worker",
+    "Cancellable",
+    "async",
+    "callback",
+    "progress",
+    "promise"
   ],
   "private": false,
   "publishConfig": {
@@ -20,7 +28,11 @@
   "author": "moyuderen",
   "homepage": "https://moyuderen.github.io/hashion",
   "repository": {
+    "type": "git",
     "url": "https://github.com/moyuderen/hashion"
+  },
+  "bugs": {
+    "url": "https://github.com/moyuderen/hashion/issues"
   },
   "type": "module",
   "types": "./dist/index.d.ts",
