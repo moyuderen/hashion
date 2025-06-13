@@ -1,5 +1,11 @@
 # Hashion
 
+## 0.0.10
+
+### Patch Changes
+
+- remove worker Singleton pattern
+
 ## 0.0.9
 
 ### Patch Changes
