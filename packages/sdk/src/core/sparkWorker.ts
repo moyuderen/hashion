@@ -19,7 +19,8 @@ export class SparkWorker {
     console.log('In Web Worker')
 
     const { file, chunkSize } = data
-    const worker = new Worker(URL.createObjectURL(new Blob([workerCode])))
+    const workUrl = URL.createObjectURL(new Blob([workerCode]))
+    const worker = new Worker(workUrl)
 
     const controller = new AbortController()
     const signal = controller.signal
@@ -43,6 +44,7 @@ export class SparkWorker {
       if (progress === 100) {
         close()
         callback(null, { progress, hash, time })
+        URL.revokeObjectURL(workUrl)
         return
       }
       callback(error, { progress })
