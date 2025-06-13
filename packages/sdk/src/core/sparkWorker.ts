@@ -2,7 +2,6 @@ import type { HashCallback, HashParameters } from '../types/hash'
 import { workerCode } from './workerCode'
 
 const isSupportWorker = !!window.Worker
-let worker: Worker
 
 export class SparkWorker {
   static pluginName = 'hash-plugin'
@@ -20,9 +19,7 @@ export class SparkWorker {
     console.log('In Web Worker')
 
     const { file, chunkSize } = data
-    if (!worker) {
-      worker = new Worker(URL.createObjectURL(new Blob([workerCode])))
-    }
+    const worker = new Worker(URL.createObjectURL(new Blob([workerCode])))
 
     const controller = new AbortController()
     const signal = controller.signal
