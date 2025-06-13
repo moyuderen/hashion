@@ -1,4 +1,4 @@
-import type { HashParameters, HashCallbackData } from '../types/hash'
+import type { HashParameters, HashCallbackData, HashPromiseData } from '../types/hash'
 
 export class Hashion {
   hashCarrier: any
@@ -12,7 +12,7 @@ export class Hashion {
   computedHash({ file, chunkSize }: HashParameters, callback: (data: HashCallbackData) => void) {
     let abortComputedHash: any
 
-    const promise = new Promise((resolve, reject) => {
+    const promise: Promise<HashPromiseData> = new Promise((resolve, reject) => {
       Promise.resolve(
         this.hashCarrier.computeHash(
           {
@@ -24,7 +24,7 @@ export class Hashion {
               reject(error)
             }
             if (progress === 100) {
-              resolve({ progress, hash, time })
+              resolve({ progress, hash, time } as HashPromiseData)
             }
             callback && callback({ progress })
           }

@@ -10,3 +10,6 @@ export type HashCallbackData = {
 }
 
 export type HashCallback = (e: any, data: HashCallbackData) => void
+
+export type HashPromiseData = Required<HashCallbackData>
+
