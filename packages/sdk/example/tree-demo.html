@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数组转树 - 演示</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 8px;
+            padding: 24px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        h2 {
+            color: #666;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 8px;
+        }
+        
+        .demo-section {
+            margin-bottom: 30px;
+        }
+        
+        .input-area {
+            margin-bottom: 20px;
+        }
+        
+        textarea {
+            width: 100%;
+            height: 120px;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 14px;
+            resize: vertical;
+        }
+        
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        
+        button:hover {
+            background: #0056b3;
+        }
+        
+        .result {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            padding: 16px;
+            margin-top: 16px;
+        }
+        
+        .tree-view {
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        
+        .tree-node {
+            margin: 2px 0;
+        }
+        
+        .tree-level-0 { color: #d73027; font-weight: bold; }
+        .tree-level-1 { color: #f46d43; }
+        .tree-level-2 { color: #fdae61; }
+        .tree-level-3 { color: #74add1; }
+        .tree-level-4 { color: #4575b4; }
+        
+        .error {
+            color: #dc3545;
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            padding: 12px;
+            border-radius: 4px;
+            margin-top: 16px;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>数组转树工具演示</h1>
+    
+    <div class="container">
+        <div class="demo-section">
+            <h2>🌳 数组转树</h2>
+            <div class="input-area">
+                <label for="arrayInput">输入扁平数组 (JSON格式):</label>
+                <textarea id="arrayInput" placeholder='[
+  {"id": 1, "name": "根节点", "parentId": null},
+  {"id": 2, "name": "子节点1", "parentId": 1},
+  {"id": 3, "name": "子节点2", "parentId": 1},
+  {"id": 4, "name": "孙节点", "parentId": 2}
+]'></textarea>
+                <button onclick="convertArrayToTree()">转换为树</button>
+                <button onclick="loadDemoData()">加载示例数据</button>
+            </div>
+            <div id="arrayToTreeResult" class="result" style="display: none;"></div>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="demo-section">
+            <h2>📋 树转数组</h2>
+            <div class="input-area">
+                <label for="treeInput">输入树结构 (JSON格式):</label>
+                <textarea id="treeInput" placeholder='[
+  {
+    "id": 1,
+    "name": "根节点",
+    "children": [
+      {"id": 2, "name": "子节点1"},
+      {"id": 3, "name": "子节点2"}
+    ]
+  }
+]'></textarea>
+                <button onclick="convertTreeToArray()">转换为数组</button>
+            </div>
+            <div id="treeToArrayResult" class="result" style="display: none;"></div>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="grid">
+            <div class="demo-section">
+                <h2>🔍 查找节点</h2>
+                <div class="input-area">
+                    <label for="searchInput">搜索条件 (name):</label>
+                    <input type="text" id="searchInput" placeholder="输入要搜索的节点名称" style="width: 100%; padding: 8px; margin-bottom: 10px;">
+                    <button onclick="searchNode()">查找节点</button>
+                </div>
+                <div id="searchResult" class="result" style="display: none;"></div>
+            </div>
+            
+            <div class="demo-section">
+                <h2>🛤️ 获取路径</h2>
+                <div class="input-area">
+                    <label for="pathInput">节点ID:</label>
+                    <input type="number" id="pathInput" placeholder="输入节点ID" style="width: 100%; padding: 8px; margin-bottom: 10px;">
+                    <button onclick="getPath()">获取路径</button>
+                </div>
+                <div id="pathResult" class="result" style="display: none;"></div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        // 导入数组转树功能 (在实际项目中使用)
+        // import { arrayToTree, treeToArray, findNodeInTree, getNodePath, traverseTree } from 'hashion'
+        
+        // 为了演示，我们直接实现这些函数
+        function arrayToTree(array, options = {}) {
+            const {
+                idField = 'id',
+                parentIdField = 'parentId',
+                childrenField = 'children',
+                rootParentId = null
+            } = options
+
+            if (!Array.isArray(array)) {
+                throw new Error('Input must be an array')
+            }
+
+            const nodeMap = new Map()
+            const roots = []
+
+            // 创建节点映射
+            array.forEach(item => {
+                const node = { ...item }
+                nodeMap.set(item[idField], node)
+            })
+
+            // 建立父子关系
+            array.forEach(item => {
+                const node = nodeMap.get(item[idField])
+                const parentId = item[parentIdField]
+
+                if (parentId === rootParentId || parentId === undefined) {
+                    roots.push(node)
+                } else {
+                    const parent = nodeMap.get(parentId)
+                    if (parent) {
+                        if (!parent[childrenField]) {
+                            parent[childrenField] = []
+                        }
+                        parent[childrenField].push(node)
+                    } else {
+                        roots.push(node)
+                    }
+                }
+            })
+
+            return roots
+        }
+
+        function treeToArray(tree, options = {}) {
+            const { childrenField = 'children', keepChildren = false } = options
+            
+            if (!Array.isArray(tree)) {
+                throw new Error('Input must be an array')
+            }
+
+            const result = []
+
+            function traverse(nodes) {
+                nodes.forEach(node => {
+                    const item = { ...node }
+                    
+                    if (item[childrenField] && Array.isArray(item[childrenField])) {
+                        const children = item[childrenField]
+                        
+                        if (!keepChildren) {
+                            delete item[childrenField]
+                        }
+                        
+                        result.push(item)
+                        traverse(children)
+                    } else {
+                        result.push(item)
+                    }
+                })
+            }
+
+            traverse(tree)
+            return result
+        }
+
+        function findNodeInTree(tree, predicate, childrenField = 'children') {
+            for (const node of tree) {
+                if (predicate(node)) {
+                    return node
+                }
+                
+                if (node[childrenField] && Array.isArray(node[childrenField])) {
+                    const found = findNodeInTree(node[childrenField], predicate, childrenField)
+                    if (found) {
+                        return found
+                    }
+                }
+            }
+            
+            return undefined
+        }
+
+        function getNodePath(tree, targetId, idField = 'id', childrenField = 'children') {
+            function findPath(nodes, path = []) {
+                for (const node of nodes) {
+                    const currentPath = [...path, node]
+                    
+                    if (node[idField] === targetId) {
+                        return currentPath
+                    }
+                    
+                    if (node[childrenField] && Array.isArray(node[childrenField])) {
+                        const found = findPath(node[childrenField], currentPath)
+                        if (found) {
+                            return found
+                        }
+                    }
+                }
+                
+                return null
+            }
+            
+            return findPath(tree) || []
+        }
+
+        function traverseTree(tree, callback, childrenField = 'children') {
+            function traverse(nodes, level = 0, parent) {
+                nodes.forEach(node => {
+                    callback(node, level, parent)
+                    
+                    if (node[childrenField] && Array.isArray(node[childrenField])) {
+                        traverse(node[childrenField], level + 1, node)
+                    }
+                })
+            }
+            
+            traverse(tree)
+        }
+
+        // 全局变量存储当前的树数据
+        let currentTree = []
+
+        // 加载示例数据
+        window.loadDemoData = function() {
+            document.getElementById('arrayInput').value = JSON.stringify(departments, null, 2)
+        }
+
+        // 数组转树
+        window.convertArrayToTree = function() {
+            try {
+                const input = document.getElementById('arrayInput').value
+                const array = JSON.parse(input)
+                
+                currentTree = arrayToTree(array)
+                
+                const resultDiv = document.getElementById('arrayToTreeResult')
+                resultDiv.style.display = 'block'
+                resultDiv.innerHTML = `
+                    <h3>转换结果:</h3>
+                    <div class="tree-view">${renderTree(currentTree)}</div>
+                    <details style="margin-top: 16px;">
+                        <summary>查看JSON结构</summary>
+                        <pre style="background: #f1f3f4; padding: 12px; border-radius: 4px; overflow-x: auto; font-size: 12px;">${JSON.stringify(currentTree, null, 2)}</pre>
+                    </details>
+                `
+            } catch (error) {
+                document.getElementById('arrayToTreeResult').innerHTML = `<div class="error">错误: ${error.message}</div>`
+                document.getElementById('arrayToTreeResult').style.display = 'block'
+            }
+        }
+
+        // 树转数组
+        window.convertTreeToArray = function() {
+            try {
+                const input = document.getElementById('treeInput').value
+                const tree = JSON.parse(input)
+                
+                const array = treeToArray(tree)
+                
+                const resultDiv = document.getElementById('treeToArrayResult')
+                resultDiv.style.display = 'block'
+                resultDiv.innerHTML = `
+                    <h3>转换结果:</h3>
+                    <table style="width: 100%; border-collapse: collapse; margin-top: 12px;">
+                        <thead>
+                            <tr style="background: #f8f9fa;">
+                                <th style="border: 1px solid #dee2e6; padding: 8px;">ID</th>
+                                <th style="border: 1px solid #dee2e6; padding: 8px;">名称</th>
+                                <th style="border: 1px solid #dee2e6; padding: 8px;">父ID</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${array.map(item => `
+                                <tr>
+                                    <td style="border: 1px solid #dee2e6; padding: 8px;">${item.id}</td>
+                                    <td style="border: 1px solid #dee2e6; padding: 8px;">${item.name || item.title || 'N/A'}</td>
+                                    <td style="border: 1px solid #dee2e6; padding: 8px;">${item.parentId || 'null'}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                    <details style="margin-top: 16px;">
+                        <summary>查看JSON数组</summary>
+                        <pre style="background: #f1f3f4; padding: 12px; border-radius: 4px; overflow-x: auto; font-size: 12px;">${JSON.stringify(array, null, 2)}</pre>
+                    </details>
+                `
+            } catch (error) {
+                document.getElementById('treeToArrayResult').innerHTML = `<div class="error">错误: ${error.message}</div>`
+                document.getElementById('treeToArrayResult').style.display = 'block'
+            }
+        }
+
+        // 搜索节点
+        window.searchNode = function() {
+            try {
+                const searchTerm = document.getElementById('searchInput').value
+                if (!searchTerm) {
+                    alert('请输入搜索条件')
+                    return
+                }
+                
+                if (currentTree.length === 0) {
+                    alert('请先转换数组为树结构')
+                    return
+                }
+                
+                const foundNode = findNodeInTree(currentTree, node => 
+                    (node.name && node.name.includes(searchTerm)) || 
+                    (node.title && node.title.includes(searchTerm))
+                )
+                
+                const resultDiv = document.getElementById('searchResult')
+                resultDiv.style.display = 'block'
+                
+                if (foundNode) {
+                    resultDiv.innerHTML = `
+                        <h3>找到节点:</h3>
+                        <pre style="background: #d4edda; padding: 12px; border-radius: 4px;">${JSON.stringify(foundNode, null, 2)}</pre>
+                    `
+                } else {
+                    resultDiv.innerHTML = `<div style="color: #856404; background: #fff3cd; padding: 12px; border-radius: 4px;">未找到匹配的节点</div>`
+                }
+            } catch (error) {
+                document.getElementById('searchResult').innerHTML = `<div class="error">错误: ${error.message}</div>`
+                document.getElementById('searchResult').style.display = 'block'
+            }
+        }
+
+        // 获取路径
+        window.getPath = function() {
+            try {
+                const nodeId = parseInt(document.getElementById('pathInput').value)
+                if (isNaN(nodeId)) {
+                    alert('请输入有效的节点ID')
+                    return
+                }
+                
+                if (currentTree.length === 0) {
+                    alert('请先转换数组为树结构')
+                    return
+                }
+                
+                const path = getNodePath(currentTree, nodeId)
+                
+                const resultDiv = document.getElementById('pathResult')
+                resultDiv.style.display = 'block'
+                
+                if (path.length > 0) {
+                    const pathNames = path.map(node => node.name || node.title || `ID:${node.id}`).join(' → ')
+                    resultDiv.innerHTML = `
+                        <h3>节点路径:</h3>
+                        <div style="font-size: 16px; margin: 12px 0; color: #495057;">${pathNames}</div>
+                        <details>
+                            <summary>查看完整路径数据</summary>
+                            <pre style="background: #f1f3f4; padding: 12px; border-radius: 4px; overflow-x: auto; font-size: 12px;">${JSON.stringify(path, null, 2)}</pre>
+                        </details>
+                    `
+                } else {
+                    resultDiv.innerHTML = `<div style="color: #856404; background: #fff3cd; padding: 12px; border-radius: 4px;">未找到指定ID的节点</div>`
+                }
+            } catch (error) {
+                document.getElementById('pathResult').innerHTML = `<div class="error">错误: ${error.message}</div>`
+                document.getElementById('pathResult').style.display = 'block'
+            }
+        }
+
+        // 渲染树结构
+        function renderTree(tree, level = 0) {
+            return tree.map(node => {
+                const indent = '  '.repeat(level)
+                const name = node.name || node.title || `ID:${node.id}`
+                let html = `<div class="tree-node tree-level-${level}">${indent}├─ ${name}</div>`
+                
+                if (node.children && node.children.length > 0) {
+                    html += renderTree(node.children, level + 1)
+                }
+                
+                return html
+            }).join('')
+        }
+
+        // 初始化示例数据
+        window.addEventListener('load', function() {
+            loadDemoData()
+        })
+    </script>
+</body>
+</html>

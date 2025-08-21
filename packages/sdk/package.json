@@ -53,6 +53,10 @@
     "./sparkWorker": {
       "types": "./dist/sparkWorker.d.ts",
       "import": "./dist/sparkWorker.js"
+    },
+    "./tree": {
+      "types": "./dist/core/tree.d.ts",
+      "import": "./dist/core/tree.js"
     }
   },
   "files": [
