@@ -1,7 +1,18 @@
 import type { HashCallback, HashParameters } from '../types/hash'
 import { workerCode } from './workerCode'
 
-const isSupportWorker = !!window.Worker
+let cachedWorkerUrl: string | null = null
+
+function getWorkerUrl(): string {
+  if (!cachedWorkerUrl) {
+    cachedWorkerUrl = URL.createObjectURL(new Blob([workerCode]))
+  }
+  return cachedWorkerUrl
+}
+
+function isWorkerSupported(): boolean {
+  return typeof window !== 'undefined' && !!window.Worker
+}
 
 export class SparkWorker {
   static pluginName = 'hash-plugin'
@@ -9,24 +20,22 @@ export class SparkWorker {
   name: string
 
   constructor() {
-    this.name = 'sparkMd5Webworker'
+    this.name = SparkWorker.name
   }
 
   computeHash(data: HashParameters, callback: HashCallback) {
-    if (!isSupportWorker) {
+    if (!isWorkerSupported()) {
       callback(new Error('Web Worker is not supported'), { progress: 0 })
       return { abort: () => {} }
     }
 
     const { file, chunkSize } = data
-    const workUrl = URL.createObjectURL(new Blob([workerCode]))
-    const worker = new Worker(workUrl)
+    const worker = new Worker(getWorkerUrl())
 
     const controller = new AbortController()
     const signal = controller.signal
 
     const cleanup = () => {
-      URL.revokeObjectURL(workUrl)
       worker.terminate()
     }
 

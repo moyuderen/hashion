@@ -63,18 +63,17 @@ try {
 
 ## 导入方式
 
-所有导出均可从主入口导入：
+主入口导出 `Hashion`、`Sha` 和通用类型：
 
 ```ts
-import { Hashion, Sha, Spark, SparkWorker } from 'hashion'
+import { Hashion, Sha } from 'hashion'
 import type { HashParameters, HashCallbackData, HashPromiseData } from 'hashion'
 ```
 
-或使用子路径导入以优化 tree-shaking：
+可选的 MD5 实现通过子路径导入：
 
 ```ts
 import { Hashion } from 'hashion'
-import { Sha } from 'hashion/sha'
 import { Spark } from 'hashion/spark'
 import { SparkWorker } from 'hashion/sparkWorker'
 ```

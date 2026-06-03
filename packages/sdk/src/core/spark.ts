@@ -12,16 +12,13 @@ function loadSparkMD5(): Promise<SparkMD5Type> {
   return sparkMD5Promise
 }
 
-const slice =
-  File.prototype.slice || (File.prototype as any).mozSlice || (File.prototype as any).webkitSlice
-
 export class Spark {
   static pluginName = 'hash-plugin'
   static name = 'spark-md5'
   name: string
 
   constructor() {
-    this.name = 'spark-md5'
+    this.name = Spark.name
   }
 
   computeHash(data: HashParameters, callback: HashCallback) {
@@ -96,7 +93,7 @@ export class Spark {
       if (signal.aborted) return
       const start = currentChunk * chunkSize
       const end = start + chunkSize >= file.size ? file.size : start + chunkSize
-      fileReader.readAsArrayBuffer(slice.call(file, start, end))
+      fileReader.readAsArrayBuffer(file.slice(start, end))
     }
 
     loadNext()

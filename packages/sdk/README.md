@@ -63,18 +63,17 @@ try {
 
 ## Import Paths
 
-All exports are available from the main entry:
+The main entry exports `Hashion`, `Sha`, and shared types:
 
 ```ts
-import { Hashion, Sha, Spark, SparkWorker } from 'hashion'
+import { Hashion, Sha } from 'hashion'
 import type { HashParameters, HashCallbackData, HashPromiseData } from 'hashion'
 ```
 
-Or use sub-path imports for tree-shaking:
+Optional MD5 implementations are available via sub-path imports:
 
 ```ts
 import { Hashion } from 'hashion'
-import { Sha } from 'hashion/sha'
 import { Spark } from 'hashion/spark'
 import { SparkWorker } from 'hashion/sparkWorker'
 ```

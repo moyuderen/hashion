@@ -37,6 +37,11 @@ describe('Spark', () => {
     expect(Spark.name).toBe('spark-md5')
   })
 
+  it('should set instance name from static property', () => {
+    const spark = new Spark()
+    expect(spark.name).toBe(Spark.name)
+  })
+
   it('should compute MD5 correctly for known content', async () => {
     const spark = new Spark()
     const file = createTestFile('hello world')

@@ -15,9 +15,9 @@ describe('SparkWorker', () => {
     expect(SparkWorker.name).toBe('sparkMd5Webworker')
   })
 
-  it('should set correct instance name', () => {
+  it('should set instance name from static property', () => {
     const worker = new SparkWorker()
-    expect(worker.name).toBe('sparkMd5Webworker')
+    expect(worker.name).toBe(SparkWorker.name)
   })
 
   it('should return abort function from computeHash', () => {
@@ -28,7 +28,6 @@ describe('SparkWorker', () => {
   })
 
   it('should call callback with error when Worker is not supported', () => {
-    // Temporarily mock window.Worker to simulate unsupported environment
     const originalWorker = window.Worker
     // @ts-expect-error - intentionally setting to undefined for test
     window.Worker = undefined
@@ -51,7 +50,6 @@ describe('SparkWorker', () => {
     const file = createTestFile('hello world')
     const callback = vi.fn()
 
-    // We can verify the function doesn't throw and returns abort
     const result = worker.computeHash({ file, chunkSize: 5 * 1024 * 1024 }, callback)
     expect(result.abort).toBeDefined()
   })
@@ -62,7 +60,6 @@ describe('SparkWorker', () => {
     const callback = vi.fn()
     const { abort } = worker.computeHash({ file, chunkSize: 1024 }, callback)
 
-    // Calling abort should not throw
     expect(() => abort()).not.toThrow()
   })
 
@@ -76,5 +73,17 @@ describe('SparkWorker', () => {
       abort()
       abort()
     }).not.toThrow()
+  })
+
+  it('should not throw on repeated computeHash calls (Blob URL is reused)', () => {
+    const worker = new SparkWorker()
+    const file = createTestFile('test')
+    const callback = vi.fn()
+
+    // Multiple sequential computeHash calls should all succeed
+    // If the Blob URL were revoked after the first call, this would fail
+    for (let i = 0; i < 5; i++) {
+      expect(() => worker.computeHash({ file, chunkSize: 1024 }, callback)).not.toThrow()
+    }
   })
 })
