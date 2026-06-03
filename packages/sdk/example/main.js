@@ -1,34 +1,74 @@
 import { Hashion } from '../src'
-import { Sha } from '../src/core/sha'
-import { Spark } from '../src/core/spark'
 import { SparkWorker } from '../src/core/sparkWorker'
 
-const app = Vue.createApp({
+const { createApp, ref } = Vue
+
+const app = createApp({
   setup() {
     const chunkSize = 5 * 1024 * 1024
-    // const hasher = new Hashion(Spark)
-    // const hasher = new Hashion(Sha)
     const hasher = new Hashion(SparkWorker)
 
-    let readCancel
+    const fileInput = ref(null)
+    const computing = ref(false)
+    const progress = ref(0)
+    const hashValue = ref('')
+    const hashTime = ref(0)
+    const fileName = ref('')
+    const error = ref(null)
 
-    const handleSelected = async (e) => {
+    let abortFn = null
+
+    function triggerFile() {
+      fileInput.value.click()
+    }
+
+    async function handleSelected(e) {
       const file = e.target.files[0]
       e.target.value = ''
 
-      const callback = ({ progress }) => {
-        console.log('progress', progress)
-      }
-      const { promise, abort } = hasher.computedHash({ file, chunkSize }, callback)
-      readCancel = abort
+      if (!file) return
 
-      const result = await promise
-      console.log(result)
+      fileName.value = file.name
+      computing.value = true
+      progress.value = 0
+      hashValue.value = ''
+      hashTime.value = 0
+      error.value = null
+
+      const { promise, abort } = hasher.computedHash(
+        { file, chunkSize },
+        ({ progress: p }) => {
+          progress.value = Math.round(p * 100) / 100
+        }
+      )
+
+      abortFn = abort
+
+      try {
+        const data = await promise
+        hashValue.value = data.hash
+        hashTime.value = data.time
+      } catch (err) {
+        error.value = err.message || 'Hash computation was cancelled or failed.'
+      } finally {
+        computing.value = false
+        abortFn = null
+      }
     }
 
-    const handleAbort = () => readCancel && readCancel()
+    function handleAbort() {
+      abortFn?.()
+    }
 
     return {
+      fileInput,
+      computing,
+      progress,
+      hashValue,
+      hashTime,
+      fileName,
+      error,
+      triggerFile,
       handleSelected,
       handleAbort
     }

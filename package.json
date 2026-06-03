@@ -2,7 +2,6 @@
   "name": "hashion",
   "version": "1.0.0",
   "private": true,
-  "description": "Browser file hashing SDK with MD5, SHA, progress reporting, cancellation, and Web Worker support.",
   "main": "index.js",
   "packageManager": "pnpm@10.12.1",
   "engines": {
@@ -33,38 +32,8 @@
     "publish:dry": "pnpm release:check && pnpm --filter hashion publish --dry-run",
     "publish:npm": "pnpm release:check && pnpm --filter hashion publish"
   },
-  "keywords": [
-    "web",
-    "browser",
-    "client",
-    "file",
-    "hash",
-    "md5",
-    "sha",
-    "sha-1",
-    "sha-256",
-    "sha-384",
-    "sha-512",
-    "spark-md5",
-    "web-worker",
-    "cancellable",
-    "async",
-    "callback",
-    "progress",
-    "promise",
-    "typescript",
-    "vite"
-  ],
   "author": "moyuderen",
   "license": "MIT",
-  "homepage": "https://moyuderen.github.io/hashion",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/moyuderen/hashion"
-  },
-  "bugs": {
-    "url": "https://github.com/moyuderen/hashion/issues"
-  },
   "devDependencies": {
     "@changesets/cli": "^2.29.4"
   }

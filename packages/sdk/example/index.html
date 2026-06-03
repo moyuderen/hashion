@@ -3,16 +3,62 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>hashion</title>
-    <link rel="stylesheet" href="//unpkg.com/element-plus/dist/index.css" />
-    <script src="//unpkg.com/vue@3"></script>
-    <script src="//unpkg.com/element-plus"></script>
+    <title>Hashion Example</title>
+    <link rel="stylesheet" href="https://unpkg.com/element-plus@2/dist/index.css" />
+    <link rel="stylesheet" href="./style.css" />
+    <script defer src="https://unpkg.com/vue@3.5"></script>
+    <script defer src="https://unpkg.com/element-plus@2"></script>
   </head>
   <body>
     <div id="app">
-      <input type="file" @change="handleSelected" />
-      <el-button type="primary" size="default" @click="handleAbort">Abort</el-button>
+      <h2>Hashion Example</h2>
+
+      <div class="actions">
+        <el-button type="primary" :disabled="computing" @click="triggerFile">
+          {{ computing ? 'Computing...' : 'Select File' }}
+        </el-button>
+        <el-button type="danger" :disabled="!computing" @click="handleAbort">
+          Abort
+        </el-button>
+      </div>
+
+      <input
+        ref="fileInput"
+        type="file"
+        class="hidden"
+        @change="handleSelected"
+      />
+
+      <el-progress
+        v-if="computing || progress > 0"
+        :percentage="progress"
+        :status="progress >= 100 ? 'success' : ''"
+        :stroke-width="18"
+        :text-inside="true"
+        class="progress-bar"
+      ></el-progress>
+
+      <div v-if="error" class="error-block">
+        <el-alert :title="error" type="error" show-icon :closable="false"></el-alert>
+      </div>
+
+      <div v-if="hashValue" class="result">
+        <div class="result-row">
+          <span class="result-label">Hash:</span>
+          <span class="result-value">{{ hashValue }}</span>
+        </div>
+        <div class="result-row">
+          <span class="result-label">Time:</span>
+          <span class="result-value">{{ hashTime }}ms</span>
+        </div>
+        <div class="result-row">
+          <span class="result-label">File:</span>
+          <span class="result-value">{{ fileName }}</span>
+        </div>
+      </div>
+
     </div>
+
     <script type="module" src="./main.js"></script>
   </body>
 </html>
