@@ -1,16 +1,25 @@
-import type { HashParameters, HashCallbackData, HashPromiseData } from '../types/hash'
+import type {
+  HashParameters,
+  HashCallbackData,
+  HashPromiseData,
+  HashPluginConstructor,
+  HashPluginInstance,
+} from '../types/hash'
 
 export class Hashion {
-  hashCarrier: any
+  hashCarrier: HashPluginInstance
   hashionName: string
 
-  constructor(plugin: any, options?: Record<string, any>) {
+  constructor(plugin: HashPluginConstructor, options?: Record<string, unknown>) {
     this.hashionName = plugin.name
     this.hashCarrier = new plugin(options)
   }
 
-  computedHash({ file, chunkSize }: HashParameters, callback: (data: HashCallbackData) => void) {
-    let abortComputedHash: any
+  computedHash({ file, chunkSize }: HashParameters, callback?: (data: HashCallbackData) => void) {
+    if (!file) throw new Error('file is required')
+    if (!chunkSize || chunkSize <= 0) throw new Error('chunkSize must be a positive number')
+
+    let abortComputedHash: { abort?: () => void; reject: (reason: Error) => void } | null = null
 
     const promise: Promise<HashPromiseData> = new Promise((resolve, reject) => {
       Promise.resolve(
@@ -19,9 +28,10 @@ export class Hashion {
             file,
             chunkSize
           },
-          (error: Error, { progress, hash, time }: HashCallbackData) => {
+          (error: Error | null, { progress, hash, time }: HashCallbackData) => {
             if (error) {
               reject(error)
+              return
             }
             if (progress === 100) {
               resolve({ progress, hash, time } as HashPromiseData)
@@ -29,8 +39,8 @@ export class Hashion {
             callback && callback({ progress })
           }
         )
-      ).then((hash) => {
-        abortComputedHash = { abort: hash?.abort, reject }
+      ).then((result) => {
+        abortComputedHash = { abort: result?.abort, reject }
       })
     })
 
@@ -39,7 +49,8 @@ export class Hashion {
       abort: () => {
         if (!abortComputedHash) return
         if (abortComputedHash.abort) abortComputedHash.abort()
-        abortComputedHash.reject(new Error('Canceled promise to rejected'))
+        abortComputedHash.reject(new Error('Hash calculation cancelled'))
+        abortComputedHash = null
       }
     }
   }

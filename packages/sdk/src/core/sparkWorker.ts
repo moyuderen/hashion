@@ -11,12 +11,12 @@ export class SparkWorker {
   constructor() {
     this.name = 'sparkMd5Webworker'
   }
+
   computeHash(data: HashParameters, callback: HashCallback) {
     if (!isSupportWorker) {
-      callback(new Error('Web worker is not supported'), { progress: 0 })
-      return
+      callback(new Error('Web Worker is not supported'), { progress: 0 })
+      return { abort: () => {} }
     }
-    console.log('In Web Worker')
 
     const { file, chunkSize } = data
     const workUrl = URL.createObjectURL(new Blob([workerCode]))
@@ -25,29 +25,32 @@ export class SparkWorker {
     const controller = new AbortController()
     const signal = controller.signal
 
-    const close = () => {
-      worker.postMessage({ type: 'DONE' })
+    const cleanup = () => {
+      URL.revokeObjectURL(workUrl)
       worker.terminate()
     }
 
-    signal.addEventListener('abort', () => worker.postMessage({ type: 'CANCELED' }))
+    signal.addEventListener('abort', () => {
+      worker.postMessage({ type: 'CANCELED' })
+      cleanup()
+      callback(new Error('Hash calculation cancelled'), { progress: 0 })
+    })
 
     worker.postMessage({ file, chunkSize })
 
     worker.onmessage = (e) => {
       const { error, progress, hash, time } = e.data
       if (error) {
+        cleanup()
         callback(error, { progress: 0 })
-        close()
         return
       }
       if (progress === 100) {
-        close()
+        cleanup()
         callback(null, { progress, hash, time })
-        URL.revokeObjectURL(workUrl)
         return
       }
-      callback(error, { progress })
+      callback(null, { progress })
     }
 
     return {

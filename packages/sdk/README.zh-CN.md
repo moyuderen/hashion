@@ -63,6 +63,15 @@ try {
 
 ## 导入方式
 
+所有导出均可从主入口导入：
+
+```ts
+import { Hashion, Sha, Spark, SparkWorker } from 'hashion'
+import type { HashParameters, HashCallbackData, HashPromiseData } from 'hashion'
+```
+
+或使用子路径导入以优化 tree-shaking：
+
 ```ts
 import { Hashion } from 'hashion'
 import { Sha } from 'hashion/sha'
@@ -221,7 +230,8 @@ function handleCancel() {
 - `Spark` 和 `SparkWorker` 需要安装 `spark-md5`。
 - `SparkWorker` 需要浏览器支持 Web Worker。
 - `Sha` 需要浏览器支持 Web Crypto API。
-- `Sha` 虽然按分片读取文件，但最终会基于完整内存缓冲区计算 digest。
+- `Sha` 虽然按分片读取文件，但最终会基于完整内存缓冲区计算 digest。超过 500 MB 的文件会被拒绝并返回错误。
+- `computedHash` 在缺少 `file` 或 `chunkSize` 不是正数时会抛出异常。
 
 ## 开发
 
@@ -229,6 +239,12 @@ function handleCancel() {
 pnpm install
 pnpm dev:sdk
 pnpm build:sdk
+```
+
+运行测试：
+
+```bash
+pnpm test:run
 ```
 
 构建 SDK 和文档：

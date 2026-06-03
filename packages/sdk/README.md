@@ -63,6 +63,15 @@ try {
 
 ## Import Paths
 
+All exports are available from the main entry:
+
+```ts
+import { Hashion, Sha, Spark, SparkWorker } from 'hashion'
+import type { HashParameters, HashCallbackData, HashPromiseData } from 'hashion'
+```
+
+Or use sub-path imports for tree-shaking:
+
 ```ts
 import { Hashion } from 'hashion'
 import { Sha } from 'hashion/sha'
@@ -221,7 +230,8 @@ function handleCancel() {
 - `Spark` and `SparkWorker` require `spark-md5`.
 - `SparkWorker` requires browser Web Worker support.
 - `Sha` requires browser Web Crypto API support.
-- `Sha` reads files in chunks but computes the final digest from a full in-memory buffer.
+- `Sha` reads files in chunks but computes the final digest from a full in-memory buffer. Files larger than 500 MB are rejected with an error.
+- `computedHash` throws if `file` is missing or `chunkSize` is not a positive number.
 
 ## Development
 
@@ -229,6 +239,12 @@ function handleCancel() {
 pnpm install
 pnpm dev:sdk
 pnpm build:sdk
+```
+
+Run tests:
+
+```bash
+pnpm test:run
 ```
 
 Build all packages and docs:

@@ -24,7 +24,7 @@ export default defineConfig({
         spark: path.resolve(__dirname, 'src/core/spark.ts'),
         sparkWorker: path.resolve(__dirname, 'src/core/sparkWorker.ts')
       },
-      name: 'Hashison',
+      name: 'Hashion',
       fileName: (format, entryName) => `${entryName}.js`,
       formats: ['es']
     },

@@ -6,13 +6,15 @@ export type ShaOptions = {
   algorithm: ShaAlgorithm
 }
 
+const MAX_MEMORY_SIZE = 500 * 1024 * 1024 // 500MB
+
 export class Sha {
   static pluginName = 'hash-plugin'
   static name = 'SHA'
   algorithm: ShaAlgorithm
   name: string
 
-  constructor(options: ShaOptions) {
+  constructor(options?: ShaOptions) {
     this.algorithm = options?.algorithm || 'SHA-256'
     this.name = 'SHA'
   }
@@ -20,24 +22,30 @@ export class Sha {
   computeHash(data: HashParameters, callback: HashCallback) {
     const { file, chunkSize } = data
     const fileSize = file.size
+
+    if (fileSize > MAX_MEMORY_SIZE) {
+      callback(
+        new Error(`File too large for SHA: ${fileSize} bytes exceeds ${MAX_MEMORY_SIZE} limit`),
+        { progress: 0 }
+      )
+      return { abort: () => {} }
+    }
+
     const reader = new FileReader()
     const startTime = Date.now()
     const totalChunks = Math.ceil(fileSize / chunkSize)
     let currentChunk = 0
     let ended = false
-
     let offset = 0
 
-    // 分配初始缓冲区（避免动态扩展）
     const totalBuffer = new ArrayBuffer(fileSize)
     const view = new Uint8Array(totalBuffer)
 
-    // 创建 AbortController 用于中断
     const controller = new AbortController()
     const signal = controller.signal
     signal.addEventListener('abort', () => {
       if (ended) return
-      reader.abort() // 中断 FileReader
+      reader.abort()
       callback(new Error('Hash calculation cancelled'), { progress: 0 })
     })
 
@@ -55,12 +63,12 @@ export class Sha {
       if (signal.aborted) return
       try {
         const chunk = new Uint8Array(e.target?.result as ArrayBuffer)
-        view.set(chunk, offset) // 将分片数据写入总缓冲区
+        view.set(chunk, offset)
         offset += chunk.length
         currentChunk++
 
         if (currentChunk < totalChunks) {
-          readNextChunk() // 继续读取下一分片
+          readNextChunk()
           callback(null, {
             progress: (currentChunk / totalChunks) * 100
           })
@@ -78,17 +86,18 @@ export class Sha {
           })
         }
       } catch (error) {
-        callback(error, { progress: 0 })
+        callback(
+          error instanceof Error ? error : new Error('Hash calculation failed'),
+          { progress: 0 }
+        )
       }
     }
 
-    reader.onerror = (error) => {
+    reader.onerror = () => {
       if (signal.aborted) return
-      console.warn('SHA-256: Hash calculation error')
-      callback(error, { progress: 0 })
+      callback(new Error('File read failed'), { progress: 0 })
     }
 
-    // 开始读取第一分片
     readNextChunk()
 
     return {

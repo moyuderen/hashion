@@ -13,7 +13,7 @@ export class Spark {
     this.name = 'spark-md5'
   }
 
-  async computeHash(data: HashParameters, callback: HashCallback) {
+  computeHash(data: HashParameters, callback: HashCallback) {
     const { file, chunkSize } = data
     let ended = false
     const spark = new SparkMD5.ArrayBuffer()
@@ -21,14 +21,15 @@ export class Spark {
     const totalChunks = Math.ceil(file.size / chunkSize)
     const startTime = Date.now()
     let currentChunk = 0
-    // 创建 AbortController 用于中断
+
     const controller = new AbortController()
     const signal = controller.signal
     signal.addEventListener('abort', () => {
       if (ended) return
-      fileReader.abort() // 中断 FileReader
+      fileReader.abort()
       callback(new Error('Hash calculation cancelled'), { progress: 0 })
     })
+
     fileReader.onload = function (e) {
       if (signal.aborted) return
       spark.append(e.target?.result as ArrayBuffer)
@@ -45,20 +46,21 @@ export class Spark {
           time: Date.now() - startTime,
           progress: 100
         })
-        return
       }
     }
-    fileReader.onerror = function (error) {
+
+    fileReader.onerror = function () {
       if (signal.aborted) return
-      console.warn('spark-md5: Hash calculation error')
-      callback(error, { progress: 0 })
+      callback(new Error('File read failed'), { progress: 0 })
     }
+
     function loadNext() {
       if (signal.aborted) return
       const start = currentChunk * chunkSize
       const end = start + chunkSize >= file.size ? file.size : start + chunkSize
       fileReader.readAsArrayBuffer(slice.call(file, start, end))
     }
+
     loadNext()
 
     return {

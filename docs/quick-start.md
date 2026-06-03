@@ -23,15 +23,12 @@ import { Hashion } from 'hashion'
 ```ts
 import { Sha } from 'hashion/sha'
 
-type ShaAlgorithm = 'SHA-1' | 'SHA-256' | 'SHA-384' | 'SHA-512'
-
-const hasher = new Hashion(Sha, options: {
-  algorithm: 'SHA-256'
-})
+// 支持的算法: 'SHA-1' | 'SHA-256' | 'SHA-384' | 'SHA-512'
+const hasher = new Hashion(Sha, { algorithm: 'SHA-256' })
 ```
 
 > [!NOTE]
-> 不传参数`options`, 默认使用`SHA-256`算法
+> 不传参数 `options`，默认使用 `SHA-256` 算法
 
 ### Spark
 
@@ -68,7 +65,7 @@ type HashCallbackData = {
   time?: number
 }
 
-type HashCallback = (e: any, data: HashCallbackData) => void
+type HashCallback = (e: Error | null, data: HashCallbackData) => void
 
 let readCancel
 const chunkSize = 5 * 1024 * 1024
@@ -84,7 +81,7 @@ const handleSelected = async (e) => {
 
   const { promise, abort } = hasher.computedHash({ file, chunkSize }, callback)
   readCancel = abort
-  const result: HashCallbackData = await promise
+  const result = await promise
 }
 
 const handleAbort = () => readCancel && readCancel()

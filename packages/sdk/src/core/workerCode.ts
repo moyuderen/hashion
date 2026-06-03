@@ -10,11 +10,10 @@ export const workerCode = `self.onmessage = (e) => {
   if(type === 'CANCELED') {
     if(ended) return
     fileReader.abort()
-    self.postMessage({ error: new Error('Hash calculation cancelled !'), progress: 0 })
+    self.postMessage({ error: new Error('Hash calculation cancelled'), progress: 0 })
   }
 
   if(type === 'DONE') {
-    console.log('Hash calculation closed !')
     self.close()
     return
   }
@@ -45,10 +44,9 @@ export const workerCode = `self.onmessage = (e) => {
     }
   }
 
-  fileReader.onerror = (error) => {
+  fileReader.onerror = () => {
     if(type === 'CANCELED') return
-    console.warn('oops, something went wrong.')
-    self.postMessage({ error, progress: 0 })
+    self.postMessage({ error: new Error('File read failed'), progress: 0 })
   }
 
   function loadNext() {
