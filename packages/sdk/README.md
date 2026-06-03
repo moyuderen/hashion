@@ -11,20 +11,20 @@ English | [简体中文](./README.zh-CN.md)
 - Progress callback support
 - Promise-based result
 - Cancellable hash calculation
-- MD5 with `spark-md5`
+- MD5 via `spark-md5` (main thread) or built-in MD5 (Web Worker)
 - SHA-1 / SHA-256 / SHA-384 / SHA-512 with Web Crypto API
-- Web Worker MD5 calculation to keep the main thread responsive
+- Web Worker MD5 calculation (self-contained, no extra dependencies) to keep the main thread responsive
 - TypeScript type declarations
 
 ## Installation
 
-For SHA algorithms only:
+For SHA algorithms or SparkWorker (no extra dependencies):
 
 ```bash
 npm i hashion
 ```
 
-For `Spark` or `SparkWorker`, install `spark-md5` as well because it is a peer dependency:
+For `Spark` (MD5 on the main thread), you also need `spark-md5`:
 
 ```bash
 npm i hashion spark-md5
@@ -85,6 +85,9 @@ import { SparkWorker } from 'hashion/sparkWorker'
 
 MD5 calculation on the main thread with `spark-md5`.
 
+> **Dependency:** Requires `spark-md5`. Install it with `npm i spark-md5`.
+> If `spark-md5` is not installed, an error will be reported at runtime.
+
 ```ts
 import { Hashion } from 'hashion'
 import { Spark } from 'hashion/spark'
@@ -94,7 +97,7 @@ const hasher = new Hashion(Spark)
 
 ### SparkWorker
 
-MD5 calculation in a Web Worker. This is useful for large files because it reduces main-thread blocking.
+MD5 calculation in a Web Worker. The MD5 algorithm is built-in (inlined), so **no extra dependencies are needed**. This is useful for large files because it reduces main-thread blocking.
 
 ```ts
 import { Hashion } from 'hashion'
@@ -220,15 +223,16 @@ function handleCancel() {
 
 ## Choosing an Implementation
 
-| Implementation | Algorithm | Thread | Best for |
-| --- | --- | --- | --- |
-| `Spark` | MD5 | Main thread | Simple MD5 use cases |
-| `SparkWorker` | MD5 | Web Worker | Large files and smoother UI |
-| `Sha` | SHA-1 / SHA-256 / SHA-384 / SHA-512 | Main thread + Web Crypto | Standard SHA algorithms |
+| Implementation | Algorithm | Thread | Extra Dependency | Best for |
+| --- | --- | --- | --- | --- |
+| `Spark` | MD5 | Main thread | `spark-md5` | Simple MD5 use cases |
+| `SparkWorker` | MD5 | Web Worker | None (built-in) | Large files and smoother UI |
+| `Sha` | SHA-1 / SHA-256 / SHA-384 / SHA-512 | Main thread + Web Crypto | None | Standard SHA algorithms |
 
 ## Notes
 
-- `Spark` and `SparkWorker` require `spark-md5`.
+- `Spark` requires `spark-md5` to be installed (`npm i spark-md5`). If not installed, a runtime error with installation instructions will be thrown.
+- `SparkWorker` has no extra dependencies — the MD5 algorithm is built-in.
 - `SparkWorker` requires browser Web Worker support.
 - `Sha` requires browser Web Crypto API support.
 - `Sha` reads files in chunks but computes the final digest from a full in-memory buffer. Files larger than 500 MB are rejected with an error.

@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from 'vitest'
+import { describe, it, expect } from 'vitest'
 import { Spark } from '../core/spark'
 import type { HashCallbackData } from '../types/hash'
 
@@ -79,12 +79,14 @@ describe('Spark', () => {
     const content = 'x'.repeat(10_000)
     const file = createTestFile(content)
 
-    const errorCallback = vi.fn()
-    spark.computeHash({ file, chunkSize: 100 }, (e, _data) => {
-      if (e) errorCallback(e)
-    }).abort()
+    const errorPromise = new Promise<Error>((resolve) => {
+      spark.computeHash({ file, chunkSize: 100 }, (e, _data) => {
+        if (e) resolve(e)
+      }).abort()
+    })
 
-    expect(errorCallback).toHaveBeenCalledWith(expect.any(Error))
+    const error = await errorPromise
+    expect(error).toBeInstanceOf(Error)
   })
 
   it('should compute MD5 for binary content', async () => {
