@@ -1,4 +1,4 @@
-export function sparkMD5Code() {
+export function sparkMD5InlineLib() {
   return `
   /*
    * Fastest md5 implementation around (JKM md5).

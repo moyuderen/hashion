@@ -1,7 +1,7 @@
-import { sparkMD5Code } from '../vendor/sparkMd5Code'
+import { sparkMD5InlineLib } from '../vendor/spark-md5-inline-lib'
 
 export const workerCode = `self.onmessage = (e) => {
-  ${sparkMD5Code()}
+  ${sparkMD5InlineLib()}
 
   const { file, chunkSize, type } = e.data
   const fileReader = new FileReader()
