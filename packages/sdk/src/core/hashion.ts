@@ -5,14 +5,16 @@ import type {
   HashPluginConstructor,
   HashPluginInstance,
 } from '../types/hash'
+import { Sha } from './sha'
 
 export class Hashion {
   hashCarrier: HashPluginInstance
   hashionName: string
 
-  constructor(plugin: HashPluginConstructor, options?: Record<string, unknown>) {
-    this.hashionName = plugin.name
-    this.hashCarrier = new plugin(options)
+  constructor(plugin?: HashPluginConstructor, options?: Record<string, unknown>) {
+    const resolvedPlugin = plugin ?? Sha
+    this.hashionName = resolvedPlugin.name
+    this.hashCarrier = new resolvedPlugin(options)
   }
 
   computedHash({ file, chunkSize }: HashParameters, callback?: (data: HashCallbackData) => void) {

@@ -69,7 +69,9 @@ type HashCallback = (e: Error | null, data: HashCallbackData) => void
 
 let readCancel
 const chunkSize = 5 * 1024 * 1024
-const hasher = new Hashion(Spark)
+
+// 不传插件，默认使用 Sha (SHA-256)
+const hasher = new Hashion()
 
 const callback = ({ progress }) => {
   console.log('progress', progress)

@@ -34,9 +34,9 @@ npm i hashion spark-md5
 
 ```ts
 import { Hashion } from 'hashion'
-import { Spark } from 'hashion/spark'
 
-const hasher = new Hashion(Spark)
+// No plugin needed — defaults to Sha (SHA-256)
+const hasher = new Hashion()
 const chunkSize = 5 * 1024 * 1024
 
 const { promise, abort } = hasher.computedHash(
@@ -126,13 +126,14 @@ If no algorithm is provided, `SHA-256` is used by default.
 
 ## API
 
-### `new Hashion(plugin, options?)`
+### `new Hashion(plugin?, options?)`
 
-Creates a hash calculator with one of the supported plugins.
+Creates a hash calculator. If no `plugin` is provided, defaults to `Sha` (SHA-256).
 
 ```ts
-const hasher = new Hashion(Spark)
-const shaHasher = new Hashion(Sha, { algorithm: 'SHA-256' })
+const hasher = new Hashion()                        // default: Sha (SHA-256)
+const shaHasher = new Hashion(Sha, { algorithm: 'SHA-512' })
+const md5Hasher = new Hashion(Spark)
 ```
 
 ### `computedHash(parameters, callback)`

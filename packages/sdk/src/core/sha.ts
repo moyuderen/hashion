@@ -3,7 +3,7 @@ import type { HashCallback, HashParameters } from '../types/hash'
 export type ShaAlgorithm = 'SHA-1' | 'SHA-256' | 'SHA-384' | 'SHA-512'
 
 export type ShaOptions = {
-  algorithm: ShaAlgorithm
+  algorithm?: ShaAlgorithm
 }
 
 const MAX_MEMORY_SIZE = 500 * 1024 * 1024 // 500MB

@@ -34,9 +34,9 @@ npm i hashion spark-md5
 
 ```ts
 import { Hashion } from 'hashion'
-import { Spark } from 'hashion/spark'
 
-const hasher = new Hashion(Spark)
+// 无需传插件 — 默认使用 Sha (SHA-256)
+const hasher = new Hashion()
 const chunkSize = 5 * 1024 * 1024
 
 const { promise, abort } = hasher.computedHash(
@@ -126,13 +126,14 @@ type ShaAlgorithm = 'SHA-1' | 'SHA-256' | 'SHA-384' | 'SHA-512'
 
 ## API
 
-### `new Hashion(plugin, options?)`
+### `new Hashion(plugin?, options?)`
 
-使用指定插件创建 hash 计算器。
+创建 hash 计算器。如果不传 `plugin`，默认使用 `Sha`（SHA-256）。
 
 ```ts
-const hasher = new Hashion(Spark)
-const shaHasher = new Hashion(Sha, { algorithm: 'SHA-256' })
+const hasher = new Hashion()                        // 默认: Sha (SHA-256)
+const shaHasher = new Hashion(Sha, { algorithm: 'SHA-512' })
+const md5Hasher = new Hashion(Spark)
 ```
 
 ### `computedHash(parameters, callback)`
