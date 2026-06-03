@@ -1,4 +1,4 @@
-import { sparkMD5Code } from './sparkMd5Code'
+import { sparkMD5Code } from '../vendor/sparkMd5Code'
 
 export const workerCode = `self.onmessage = (e) => {
   ${sparkMD5Code()}
