@@ -1,37 +1,83 @@
-# Quick start
+# Hashion
 
-## Install
+Browser file hashing SDK with MD5, SHA, progress reporting, cancellation, and Web Worker support.
+
+English | [简体中文](./README.zh-CN.md)
+
+## Features
+
+- Calculate file hash in the browser
+- Read large files by chunks
+- Progress callback support
+- Promise-based result
+- Cancellable hash calculation
+- MD5 with `spark-md5`
+- SHA-1 / SHA-256 / SHA-384 / SHA-512 with Web Crypto API
+- Web Worker MD5 calculation to keep the main thread responsive
+- TypeScript type declarations
+
+## Installation
+
+For SHA algorithms only:
 
 ```bash
 npm i hashion
 ```
 
-## Useage
+For `Spark` or `SparkWorker`, install `spark-md5` as well because it is a peer dependency:
 
-### import Hashion (Base class)
+```bash
+npm i hashion spark-md5
+```
+
+## Quick Start
 
 ```ts
 import { Hashion } from 'hashion'
+import { Spark } from 'hashion/spark'
+
+const hasher = new Hashion(Spark)
+const chunkSize = 5 * 1024 * 1024
+
+const { promise, abort } = hasher.computedHash(
+  {
+    file,
+    chunkSize
+  },
+  ({ progress }) => {
+    console.log('progress:', progress)
+  }
+)
+
+try {
+  const result = await promise
+  console.log('hash:', result.hash)
+  console.log('time:', result.time)
+} catch (error) {
+  console.error(error)
+}
+
+// Cancel if needed
+// abort()
 ```
 
-### Sha
+## Import Paths
 
 ```ts
+import { Hashion } from 'hashion'
 import { Sha } from 'hashion/sha'
-
-type ShaAlgorithm = 'SHA-1' | 'SHA-256' | 'SHA-384' | 'SHA-512'
-
-const hasher = new Hashion(Sha, options: {
-  algorithm: 'SHA-256'
-})
+import { Spark } from 'hashion/spark'
+import { SparkWorker } from 'hashion/sparkWorker'
 ```
 
-> [!NOTE]
-> 不传参数`options`, 默认使用`SHA-256`算法
+## Hash Implementations
 
 ### Spark
 
+MD5 calculation on the main thread with `spark-md5`.
+
 ```ts
+import { Hashion } from 'hashion'
 import { Spark } from 'hashion/spark'
 
 const hasher = new Hashion(Spark)
@@ -39,49 +85,164 @@ const hasher = new Hashion(Spark)
 
 ### SparkWorker
 
+MD5 calculation in a Web Worker. This is useful for large files because it reduces main-thread blocking.
+
 ```ts
+import { Hashion } from 'hashion'
 import { SparkWorker } from 'hashion/sparkWorker'
 
 const hasher = new Hashion(SparkWorker)
 ```
 
-### How to Use
+### Sha
+
+SHA calculation with the browser Web Crypto API.
+
+```ts
+import { Hashion } from 'hashion'
+import { Sha } from 'hashion/sha'
+
+const hasher = new Hashion(Sha, {
+  algorithm: 'SHA-256'
+})
+```
+
+Supported algorithms:
+
+```ts
+type ShaAlgorithm = 'SHA-1' | 'SHA-256' | 'SHA-384' | 'SHA-512'
+```
+
+If no algorithm is provided, `SHA-256` is used by default.
+
+## API
+
+### `new Hashion(plugin, options?)`
+
+Creates a hash calculator with one of the supported plugins.
+
+```ts
+const hasher = new Hashion(Spark)
+const shaHasher = new Hashion(Sha, { algorithm: 'SHA-256' })
+```
+
+### `computedHash(parameters, callback)`
+
+Starts hash calculation.
+
+```ts
+const { promise, abort } = hasher.computedHash(parameters, callback)
+```
+
+#### Parameters
 
 ```ts
 type HashParameters = {
-  /** File */
   file: File
-  /** 分开大小 */
   chunkSize: number
 }
+```
 
+#### Progress callback
+
+```ts
 type HashCallbackData = {
-  /** 计算进度 1-100 */
   progress: number
-  /** 成功之后的hash值 */
   hash?: string
-  /** 计算耗时，单位为ms */
   time?: number
 }
 
-type HashCallback = (e: any, data: HashCallbackData) => void
-
-let readCancel
-const chunkSize = 5 * 1024 * 1024
-const hasher = new Hashion(Spark)
-
-const callback = ({ progress }) => {
-  console.log('progress', progress)
-}
-
-const handleSelected = async (e) => {
-  const file = e.target.files[0]
-  e.target.value = ''
-
-  const { promise, abort } = hasher.computedHash({ file, chunkSize }, callback)
-  readCancel = abort
-  const result: HashCallbackData = await promise
-}
-
-const handleAbort = () => readCancel && readCancel()
+type ProgressCallback = (data: HashCallbackData) => void
 ```
+
+#### Result
+
+```ts
+type HashResult = {
+  progress: 100
+  hash: string
+  time: number
+}
+```
+
+`promise` resolves when progress reaches `100` and rejects when calculation fails or is cancelled.
+
+#### Cancel calculation
+
+```ts
+const { abort } = hasher.computedHash({ file, chunkSize }, onProgress)
+
+abort()
+```
+
+## File Input Example
+
+```ts
+import { Hashion } from 'hashion'
+import { SparkWorker } from 'hashion/sparkWorker'
+
+const hasher = new Hashion(SparkWorker)
+const chunkSize = 5 * 1024 * 1024
+let cancelHash: (() => void) | undefined
+
+async function handleFileChange(event: Event) {
+  const input = event.target as HTMLInputElement
+  const file = input.files?.[0]
+
+  if (!file) return
+
+  input.value = ''
+
+  const { promise, abort } = hasher.computedHash({ file, chunkSize }, ({ progress }) => {
+    console.log(`progress: ${progress}%`)
+  })
+
+  cancelHash = abort
+
+  const result = await promise
+  console.log(result)
+}
+
+function handleCancel() {
+  cancelHash?.()
+}
+```
+
+## Choosing an Implementation
+
+| Implementation | Algorithm | Thread | Best for |
+| --- | --- | --- | --- |
+| `Spark` | MD5 | Main thread | Simple MD5 use cases |
+| `SparkWorker` | MD5 | Web Worker | Large files and smoother UI |
+| `Sha` | SHA-1 / SHA-256 / SHA-384 / SHA-512 | Main thread + Web Crypto | Standard SHA algorithms |
+
+## Notes
+
+- `Spark` and `SparkWorker` require `spark-md5`.
+- `SparkWorker` requires browser Web Worker support.
+- `Sha` requires browser Web Crypto API support.
+- `Sha` reads files in chunks but computes the final digest from a full in-memory buffer.
+
+## Development
+
+```bash
+pnpm install
+pnpm dev:sdk
+pnpm build:sdk
+```
+
+Build all packages and docs:
+
+```bash
+pnpm build:all
+```
+
+Preview the package before publishing:
+
+```bash
+pnpm publish:dry
+```
+
+## License
+
+MIT

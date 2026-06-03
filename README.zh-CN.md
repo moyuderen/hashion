@@ -1,36 +1,36 @@
 # Hashion
 
-Browser file hashing SDK with MD5, SHA, progress reporting, cancellation, and Web Worker support.
+浏览器端文件 Hash 计算 SDK，支持 MD5、SHA、进度回调、取消计算和 Web Worker。
 
-English | [简体中文](./README.zh-CN.md)
+[English](./README.md) | 简体中文
 
-## Features
+## 功能特性
 
-- Calculate file hash in the browser
-- Read large files by chunks
-- Progress callback support
-- Promise-based result
-- Cancellable hash calculation
-- MD5 with `spark-md5`
-- SHA-1 / SHA-256 / SHA-384 / SHA-512 with Web Crypto API
-- Web Worker MD5 calculation to keep the main thread responsive
-- TypeScript type declarations
+- 在浏览器端计算文件 hash
+- 支持大文件分片读取
+- 支持进度回调
+- 支持 Promise 异步结果
+- 支持取消 hash 计算
+- 基于 `spark-md5` 计算 MD5
+- 基于 Web Crypto API 计算 SHA-1 / SHA-256 / SHA-384 / SHA-512
+- 支持在 Web Worker 中计算 MD5，减少主线程阻塞
+- 内置 TypeScript 类型声明
 
-## Installation
+## 安装
 
-For SHA algorithms only:
+如果只使用 SHA 算法：
 
 ```bash
 npm i hashion
 ```
 
-For `Spark` or `SparkWorker`, install `spark-md5` as well because it is a peer dependency:
+如果使用 `Spark` 或 `SparkWorker`，还需要安装 `spark-md5`，因为它是 peer dependency：
 
 ```bash
 npm i hashion spark-md5
 ```
 
-## Quick Start
+## 快速开始
 
 ```ts
 import { Hashion } from 'hashion'
@@ -57,11 +57,11 @@ try {
   console.error(error)
 }
 
-// Cancel if needed
+// 如需取消计算
 // abort()
 ```
 
-## Import Paths
+## 导入方式
 
 ```ts
 import { Hashion } from 'hashion'
@@ -70,11 +70,11 @@ import { Spark } from 'hashion/spark'
 import { SparkWorker } from 'hashion/sparkWorker'
 ```
 
-## Hash Implementations
+## Hash 实现
 
 ### Spark
 
-MD5 calculation on the main thread with `spark-md5`.
+在主线程中基于 `spark-md5` 计算 MD5。
 
 ```ts
 import { Hashion } from 'hashion'
@@ -85,7 +85,7 @@ const hasher = new Hashion(Spark)
 
 ### SparkWorker
 
-MD5 calculation in a Web Worker. This is useful for large files because it reduces main-thread blocking.
+在 Web Worker 中计算 MD5，适合大文件场景，可以减少主线程阻塞，让页面交互更流畅。
 
 ```ts
 import { Hashion } from 'hashion'
@@ -96,7 +96,7 @@ const hasher = new Hashion(SparkWorker)
 
 ### Sha
 
-SHA calculation with the browser Web Crypto API.
+基于浏览器 Web Crypto API 计算 SHA。
 
 ```ts
 import { Hashion } from 'hashion'
@@ -107,19 +107,19 @@ const hasher = new Hashion(Sha, {
 })
 ```
 
-Supported algorithms:
+支持的算法：
 
 ```ts
 type ShaAlgorithm = 'SHA-1' | 'SHA-256' | 'SHA-384' | 'SHA-512'
 ```
 
-If no algorithm is provided, `SHA-256` is used by default.
+如果不传 `algorithm`，默认使用 `SHA-256`。
 
 ## API
 
 ### `new Hashion(plugin, options?)`
 
-Creates a hash calculator with one of the supported plugins.
+使用指定插件创建 hash 计算器。
 
 ```ts
 const hasher = new Hashion(Spark)
@@ -128,13 +128,13 @@ const shaHasher = new Hashion(Sha, { algorithm: 'SHA-256' })
 
 ### `computedHash(parameters, callback)`
 
-Starts hash calculation.
+开始计算文件 hash。
 
 ```ts
 const { promise, abort } = hasher.computedHash(parameters, callback)
 ```
 
-#### Parameters
+#### 参数
 
 ```ts
 type HashParameters = {
@@ -143,7 +143,7 @@ type HashParameters = {
 }
 ```
 
-#### Progress callback
+#### 进度回调
 
 ```ts
 type HashCallbackData = {
@@ -155,7 +155,7 @@ type HashCallbackData = {
 type ProgressCallback = (data: HashCallbackData) => void
 ```
 
-#### Result
+#### 计算结果
 
 ```ts
 type HashResult = {
@@ -165,9 +165,9 @@ type HashResult = {
 }
 ```
 
-`promise` resolves when progress reaches `100` and rejects when calculation fails or is cancelled.
+`promise` 会在进度达到 `100` 时 resolve，在计算失败或取消计算时 reject。
 
-#### Cancel calculation
+#### 取消计算
 
 ```ts
 const { abort } = hasher.computedHash({ file, chunkSize }, onProgress)
@@ -175,7 +175,7 @@ const { abort } = hasher.computedHash({ file, chunkSize }, onProgress)
 abort()
 ```
 
-## File Input Example
+## 文件选择示例
 
 ```ts
 import { Hashion } from 'hashion'
@@ -208,22 +208,22 @@ function handleCancel() {
 }
 ```
 
-## Choosing an Implementation
+## 如何选择实现
 
-| Implementation | Algorithm | Thread | Best for |
+| 实现 | 算法 | 线程 | 适用场景 |
 | --- | --- | --- | --- |
-| `Spark` | MD5 | Main thread | Simple MD5 use cases |
-| `SparkWorker` | MD5 | Web Worker | Large files and smoother UI |
-| `Sha` | SHA-1 / SHA-256 / SHA-384 / SHA-512 | Main thread + Web Crypto | Standard SHA algorithms |
+| `Spark` | MD5 | 主线程 | 简单 MD5 计算场景 |
+| `SparkWorker` | MD5 | Web Worker | 大文件计算、希望页面更流畅的场景 |
+| `Sha` | SHA-1 / SHA-256 / SHA-384 / SHA-512 | 主线程 + Web Crypto | 标准 SHA 算法场景 |
 
-## Notes
+## 注意事项
 
-- `Spark` and `SparkWorker` require `spark-md5`.
-- `SparkWorker` requires browser Web Worker support.
-- `Sha` requires browser Web Crypto API support.
-- `Sha` reads files in chunks but computes the final digest from a full in-memory buffer.
+- `Spark` 和 `SparkWorker` 需要安装 `spark-md5`。
+- `SparkWorker` 需要浏览器支持 Web Worker。
+- `Sha` 需要浏览器支持 Web Crypto API。
+- `Sha` 虽然按分片读取文件，但最终会基于完整内存缓冲区计算 digest。
 
-## Development
+## 开发
 
 ```bash
 pnpm install
@@ -231,18 +231,18 @@ pnpm dev:sdk
 pnpm build:sdk
 ```
 
-Build all packages and docs:
+构建 SDK 和文档：
 
 ```bash
 pnpm build:all
 ```
 
-Preview the package before publishing:
+发布前预览 npm 包内容：
 
 ```bash
 pnpm publish:dry
 ```
 
-## License
+## 许可证
 
 MIT

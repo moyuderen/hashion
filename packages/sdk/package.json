@@ -1,24 +1,31 @@
 {
   "name": "hashion",
   "version": "0.0.11",
-  "description": "计算文件hash",
+  "description": "Browser file hashing SDK with MD5, SHA, progress reporting, cancellation, and Web Worker support.",
   "keywords": [
     "web",
     "browser",
     "client",
     "file",
+    "file-hash",
+    "browser-hash",
     "hash",
-    "spark-md5",
+    "md5",
+    "sha",
     "sha-1",
     "sha-256",
+    "sha-384",
     "sha-512",
-    "Web Worker",
-    "inline Web Worker",
-    "Cancellable",
+    "spark-md5",
+    "web-worker",
+    "inline-worker",
+    "cancellable",
     "async",
     "callback",
     "progress",
-    "promise"
+    "promise",
+    "typescript",
+    "vite"
   ],
   "private": false,
   "publishConfig": {
@@ -35,34 +42,45 @@
     "url": "https://github.com/moyuderen/hashion/issues"
   },
   "type": "module",
-  "types": "./dist/index.d.ts",
+  "main": "./dist/index.js",
   "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
     },
     "./sha": {
       "types": "./dist/sha.d.ts",
-      "import": "./dist/sha.js"
+      "import": "./dist/sha.js",
+      "default": "./dist/sha.js"
     },
     "./spark": {
       "types": "./dist/spark.d.ts",
-      "import": "./dist/spark.js"
+      "import": "./dist/spark.js",
+      "default": "./dist/spark.js"
     },
     "./sparkWorker": {
       "types": "./dist/sparkWorker.d.ts",
-      "import": "./dist/sparkWorker.js"
-    }
+      "import": "./dist/sparkWorker.js",
+      "default": "./dist/sparkWorker.js"
+    },
+    "./package.json": "./package.json"
   },
   "files": [
-    "dist"
+    "dist",
+    "README.md",
+    "README.zh-CN.md"
   ],
   "sideEffects": false,
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
-    "preview": "vite preview"
+    "typecheck": "tsc --noEmit",
+    "build": "pnpm typecheck && vite build",
+    "preview": "vite preview",
+    "clean": "rm -rf dist",
+    "prepublishOnly": "pnpm build"
   },
   "peerDependencies": {
     "spark-md5": "^3.0.2"
